@@ -46,18 +46,16 @@ namespace ToDoIntegrationTest
         [Fact]
         public async Task GetAllItemAfterAddingItemTest()
         {
-            var addItemRequest = new ToDoItemModel
+            var addItemRequest = new AddUpdateItemRequestModel
             {
-                Id = 2,
                 Name = "Create REST API",
                 IsComplete = true
             };
             var addItemResponse = await _client.PostAsJsonAsync("api/v1/ToDo", addItemRequest);
             addItemResponse.EnsureSuccessStatusCode();
 
-            addItemRequest = new ToDoItemModel
+            addItemRequest = new AddUpdateItemRequestModel
             {
-                Id = 3,
                 Name = "Add JWT authentication",
                 IsComplete = true
             };
@@ -69,9 +67,9 @@ namespace ToDoIntegrationTest
             getAllItemResponse.EnsureSuccessStatusCode();
             var getAllItemResponseResult = getAllItemResponse.Content.ReadAsStringAsync().Result;
             var getAllItemResponseResultJson = JsonConvert.DeserializeObject<ItemCollectionResponseModel>(getAllItemResponseResult);
-            Assert.Equal(3, getAllItemResponseResultJson.Items.Count());
+            Assert.Equal(2, getAllItemResponseResultJson.Items.Count());
 
-            var getItemByIdResponse = await _client.GetAsync("api/v1/ToDo/2");
+            var getItemByIdResponse = await _client.GetAsync("api/v1/ToDo/1");
 
             getItemByIdResponse.EnsureSuccessStatusCode();
             var getItemByIdResponseResult = getItemByIdResponse.Content.ReadAsStringAsync().Result;
@@ -82,24 +80,23 @@ namespace ToDoIntegrationTest
         [Fact]
         public async Task UpdateItemTest()
         {
-            var addItemRequest = new ToDoItemModel
+            var addItemRequest = new AddUpdateItemRequestModel
             {
-                Id = 2,
                 Name = "Create REST API",
                 IsComplete = true
             };
             var addItemResponse = await _client.PostAsJsonAsync("api/v1/ToDo", addItemRequest);
             addItemResponse.EnsureSuccessStatusCode();
 
-            var updateItemRequest = new UpdateItemRequestModel
+            var updateItemRequest = new AddUpdateItemRequestModel
             {
                 Name = "Add unit testing",
                 IsComplete = false
             };
-            var updateItemResponse = await _client.PutAsJsonAsync("api/v1/ToDo/2", updateItemRequest);
+            var updateItemResponse = await _client.PutAsJsonAsync("api/v1/ToDo/1", updateItemRequest);
             updateItemResponse.EnsureSuccessStatusCode();
 
-            var getItemByIdResponse = await _client.GetAsync("api/v1/ToDo/2");
+            var getItemByIdResponse = await _client.GetAsync("api/v1/ToDo/1");
 
             getItemByIdResponse.EnsureSuccessStatusCode();
             var getItemByIdResponseResult = getItemByIdResponse.Content.ReadAsStringAsync().Result;
@@ -110,13 +107,20 @@ namespace ToDoIntegrationTest
         [Fact]
         public async Task DeleteItemTest()
         {
-            var addItemRequest = new ToDoItemModel
+            var addItemRequest = new AddUpdateItemRequestModel
             {
-                Id = 2,
                 Name = "Create REST API",
                 IsComplete = true
             };
             var addItemResponse = await _client.PostAsJsonAsync("api/v1/ToDo", addItemRequest);
+            addItemResponse.EnsureSuccessStatusCode();
+
+            addItemRequest = new AddUpdateItemRequestModel
+            {
+                Name = "Add JWT authentication",
+                IsComplete = true
+            };
+            addItemResponse = await _client.PostAsJsonAsync("api/v1/ToDo", addItemRequest);
             addItemResponse.EnsureSuccessStatusCode();
 
             var deleteItemResponse = await _client.DeleteAsync("api/v1/ToDo/1");
